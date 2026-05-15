@@ -2,807 +2,1052 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>G-AIX 회의실 예약 현황</title>
-<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#fbfbfd">
+<title>G-AIX 회의실</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   :root {
-    --bg: #f4f6fa;
-    --card: #ffffff;
-    --border: #e8ecf2;
-    --text: #1a1f2e;
-    --text-sub: #6b7280;
-    --text-light: #9ca3af;
-    --primary: #2563eb;
-    --판교: #2563eb;
-    --부천: #16a34a;
-    --시흥: #ea580c;
-    --의정부: #9333ea;
-    --하남: #db2777;
-    --판교-bg: #eff6ff;
-    --부천-bg: #f0fdf4;
-    --시흥-bg: #fff7ed;
-    --의정부-bg: #faf5ff;
-    --하남-bg: #fdf2f8;
-    --radius: 12px;
-    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    /* Surfaces */
+    --bg: #fbfbfd;
+    --bg-elev: #ffffff;
+    --bg-soft: #f5f5f7;
+    --bg-tint: #f0f0f3;
+
+    /* Text */
+    --ink: #1d1d1f;
+    --ink-2: #515154;
+    --ink-3: #86868b;
+    --ink-4: #b0b0b5;
+
+    /* Lines */
+    --line: rgba(0,0,0,0.08);
+    --line-strong: rgba(0,0,0,0.14);
+
+    /* Accent (Apple system blue) */
+    --accent: #0071e3;
+    --accent-press: #0058b8;
+
+    /* Regions — softened, Apple Calendar-esque */
+    --판교: #0071e3;     --판교-bg: #eaf3fd;
+    --부천: #34a853;     --부천-bg: #e8f5ec;
+    --시흥: #ff9500;     --시흥-bg: #fff3e0;
+    --의정부: #af52de;   --의정부-bg: #f4ebfa;
+    --하남: #ff2d55;     --하남-bg: #ffe9ed;
+
+    /* States */
+    --warn: #ff9500;
+    --danger: #ff3b30;
+    --success: #34c759;
+
+    --r-sm: 10px;
+    --r-md: 14px;
+    --r-lg: 20px;
+    --r-xl: 24px;
+
+    --shadow-1: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-2: 0 6px 24px -8px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @media (prefers-color-scheme: dark) {
+    /* keep light for now — could add dark later */
+  }
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Malgun Gothic', '맑은 고딕', sans-serif;
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Apple SD Gothic Neo', 'Pretendard Variable', 'Pretendard', system-ui, sans-serif;
     background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'tnum' 1, 'ss01' 1;
+    letter-spacing: -0.01em;
   }
 
-  /* 헤더 */
+  body { min-height: 100vh; padding-bottom: var(--safe-bottom); }
+
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  a { color: inherit; text-decoration: none; }
+  ol, ul { list-style: none; }
+
+  /* ============ HEADER ============ */
   .header {
-    background: var(--card);
-    border-bottom: 1px solid var(--border);
-    padding: 0 32px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    padding-top: var(--safe-top);
+    background: rgba(251,251,253,0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--line);
+  }
+  .header-inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 14px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 64px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    gap: 12px;
   }
-
-  .header-left {
+  .brand {
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
   }
-
-  .header-logo {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .brand-mark {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(160deg, #0071e3 0%, #5e5ce6 100%);
+    display: grid; place-items: center;
     color: white;
-    font-size: 18px;
-  }
-
-  .header-title {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 700;
-    color: var(--text);
+    letter-spacing: -0.02em;
+    box-shadow: 0 4px 14px -4px rgba(0,113,227,0.45);
+    flex-shrink: 0;
   }
-
-  .header-sub {
+  .brand-text { min-width: 0; }
+  .brand-title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .brand-sub {
     font-size: 12px;
-    color: var(--text-sub);
-    margin-top: 1px;
+    color: var(--ink-3);
+    margin-top: 2px;
+    line-height: 1.2;
   }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
   .btn {
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.15s;
-    font-family: inherit;
-  }
-
-  .btn-primary {
-    background: var(--primary);
-    color: white;
-  }
-
-  .btn-primary:hover { background: #1d4ed8; }
-
-  .btn-outline {
-    background: transparent;
-    color: var(--text-sub);
-    border: 1px solid var(--border);
-  }
-
-  .btn-outline:hover { background: var(--bg); }
-
-  /* 탭 */
-  .tabs {
-    background: var(--card);
-    border-bottom: 1px solid var(--border);
-    padding: 0 32px;
-    display: flex;
-    gap: 4px;
-  }
-
-  .tab {
-    padding: 14px 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 980px;
     font-size: 13px;
     font-weight: 500;
-    color: var(--text-sub);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.15s;
+    letter-spacing: -0.01em;
+    transition: transform 0.08s ease, background 0.15s ease, color 0.15s ease;
     white-space: nowrap;
   }
-
-  .tab.active {
-    color: var(--primary);
-    border-bottom-color: var(--primary);
-    font-weight: 600;
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-press); }
+  .btn-ghost { background: transparent; color: var(--ink-2); }
+  .btn-ghost:hover { background: var(--bg-soft); color: var(--ink); }
+  .btn-icon {
+    width: 36px; height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    color: var(--ink-2);
   }
+  .btn-icon:hover { background: var(--bg-soft); }
+  .btn-icon svg { width: 18px; height: 18px; }
 
-  .tab:hover:not(.active) { color: var(--text); }
-
-  /* 메인 레이아웃 */
-  .main {
-    padding: 24px 32px;
-    max-width: 1400px;
+  /* ============ TABS ============ */
+  .tabs-wrap {
+    position: sticky;
+    top: calc(var(--safe-top) + 65px);
+    z-index: 40;
+    background: rgba(251,251,253,0.85);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--line);
+  }
+  .tabs {
+    max-width: 1240px;
     margin: 0 auto;
+    padding: 0 16px;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    position: relative;
+    padding: 14px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-3);
+    white-space: nowrap;
+    transition: color 0.15s;
+  }
+  .tab::after {
+    content: '';
+    position: absolute;
+    left: 12px; right: 12px;
+    bottom: -1px;
+    height: 2px;
+    background: var(--ink);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+  }
+  .tab.active { color: var(--ink); font-weight: 600; }
+  .tab.active::after { transform: scaleX(1); }
+
+  /* ============ MAIN ============ */
+  .main {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 28px 24px 80px;
   }
 
-  /* 요약 카드 */
-  .summary-cards {
+  /* Stat row */
+  .stats {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
   }
-
-  .summary-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    box-shadow: var(--shadow);
+  .stat {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 16px 18px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
-
-  .summary-card-label {
+  .stat:hover { transform: translateY(-1px); box-shadow: var(--shadow-2); }
+  .stat-label {
     font-size: 12px;
-    color: var(--text-sub);
+    color: var(--ink-3);
     font-weight: 500;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    letter-spacing: 0;
   }
-
-  .summary-card-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--text);
+  .stat-value {
+    font-size: 30px;
+    font-weight: 600;
     line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
   }
-
-  .summary-card-value span {
+  .stat-value span {
     font-size: 14px;
     font-weight: 500;
-    color: var(--text-sub);
+    color: var(--ink-3);
+    letter-spacing: -0.01em;
   }
+  .stat.is-alert .stat-value { color: var(--warn); }
+  .stat.is-accent .stat-value { color: var(--accent); }
 
-  .summary-card.alert .summary-card-value { color: #dc2626; }
-  .summary-card.warning .summary-card-value { color: #ea580c; }
-
-  /* 컨텐츠 영역 */
-  .content-grid {
+  /* ============ CONTENT GRID ============ */
+  .grid {
     display: grid;
-    grid-template-columns: 1fr 260px;
+    grid-template-columns: 1fr 300px;
     gap: 20px;
+    align-items: start;
   }
 
   .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
     overflow: hidden;
   }
+  .card + .card { margin-top: 16px; }
 
-  .card-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
+  .card-head {
+    padding: 18px 22px 14px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
-
-  .card-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text);
-  }
-
-  .card-sub {
-    font-size: 12px;
-    color: var(--text-sub);
-    margin-top: 2px;
-  }
-
-  /* 월력 */
-  .calendar-nav {
-    display: flex;
-    align-items: center;
     gap: 12px;
   }
-
-  .calendar-nav-btn {
-    width: 28px;
-    height: 28px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: var(--text-sub);
-    transition: all 0.15s;
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .card-sub {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-top: 3px;
   }
 
-  .calendar-nav-btn:hover { background: var(--bg); }
-
-  .calendar-month {
-    font-size: 14px;
-    font-weight: 700;
-    min-width: 80px;
+  /* ============ CALENDAR ============ */
+  .cal-nav { display: flex; align-items: center; gap: 4px; }
+  .cal-nav-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    color: var(--ink-2);
+    display: grid; place-items: center;
+    transition: background 0.15s;
+  }
+  .cal-nav-btn:hover { background: var(--bg-soft); color: var(--ink); }
+  .cal-nav-btn svg { width: 16px; height: 16px; }
+  .cal-month {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    min-width: 100px;
     text-align: center;
+    padding: 0 8px;
   }
-
-  .calendar-grid {
-    padding: 16px 20px;
+  .cal-today-btn {
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 980px;
+    background: var(--bg-soft);
+    color: var(--ink-2);
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 4px;
   }
+  .cal-today-btn:hover { background: var(--bg-tint); color: var(--ink); }
 
-  .calendar-weekdays {
+  .cal-grid { padding: 4px 14px 18px; }
+  .cal-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    padding: 0 2px;
   }
-
-  .calendar-weekday {
+  .cal-weekday {
     text-align: center;
     font-size: 11px;
-    font-weight: 600;
-    color: var(--text-sub);
-    padding: 6px 0;
+    font-weight: 500;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    padding: 8px 0;
   }
-
-  .calendar-weekday:first-child { color: #ef4444; }
-  .calendar-weekday:last-child { color: #3b82f6; }
-
-  .calendar-days {
+  .cal-weekday:first-child { color: #ff3b30; }
+  .cal-weekday:last-child { color: #0071e3; }
+  .cal-days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 4px;
   }
-
-  .calendar-day {
-    min-height: 80px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 6px;
+  .cal-day {
+    min-height: 84px;
+    border-radius: var(--r-sm);
+    padding: 6px 6px 4px;
     cursor: pointer;
-    transition: all 0.15s;
     position: relative;
-  }
-
-  .calendar-day:hover { border-color: var(--primary); background: #f8faff; }
-  .calendar-day.today { border-color: var(--primary); background: #eff6ff; }
-  .calendar-day.other-month { opacity: 0.4; }
-  .calendar-day.selected { border-color: var(--primary); background: #eff6ff; box-shadow: 0 0 0 2px rgba(37,99,235,0.2); }
-
-  .day-number {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-
-  .calendar-day.today .day-number {
-    background: var(--primary);
-    color: white;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-  }
-
-  .day-badges {
+    transition: background 0.12s ease;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
   }
-
-  .day-badge {
-    font-size: 10px;
+  .cal-day:hover { background: var(--bg-soft); }
+  .cal-day.is-other { opacity: 0.32; }
+  .cal-day.is-today .day-num {
+    background: var(--accent);
+    color: white;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 12px;
     font-weight: 600;
-    padding: 1px 5px;
-    border-radius: 4px;
+  }
+  .cal-day.is-selected {
+    background: var(--bg-soft);
+    box-shadow: inset 0 0 0 1.5px var(--ink);
+  }
+  .day-num {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+  }
+  .day-badges { display: flex; flex-direction: column; gap: 2px; }
+  .day-badge {
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    letter-spacing: -0.01em;
   }
-
   .badge-판교 { background: var(--판교-bg); color: var(--판교); }
   .badge-부천 { background: var(--부천-bg); color: var(--부천); }
   .badge-시흥 { background: var(--시흥-bg); color: var(--시흥); }
   .badge-의정부 { background: var(--의정부-bg); color: var(--의정부); }
   .badge-하남 { background: var(--하남-bg); color: var(--하남); }
 
-  /* 선택한 날짜 상세 */
-  .detail-table {
+  /* Mobile-only dot indicator instead of full badges */
+  .day-dots {
+    display: none;
+    gap: 3px;
+    margin-top: auto;
+    justify-content: center;
+    padding-bottom: 2px;
+  }
+  .day-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+  }
+
+  /* ============ TABLE ============ */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .table-wrap::-webkit-scrollbar { height: 8px; }
+  .table-wrap::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+
+  .data-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-variant-numeric: tabular-nums;
   }
-
-  .detail-table th {
-    background: var(--bg);
-    padding: 8px 12px;
-    font-size: 11px;
+  .data-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--bg-soft);
+    padding: 11px 14px;
+    font-size: 11.5px;
     font-weight: 600;
-    color: var(--text-sub);
+    color: var(--ink-3);
+    letter-spacing: 0.02em;
     text-align: left;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
   }
+  .data-table thead th:first-child { padding-left: 22px; }
+  .data-table thead th:last-child { padding-right: 22px; text-align: right; }
 
-  .detail-table td {
-    padding: 10px 12px;
-    font-size: 12px;
-    color: var(--text);
-    border-bottom: 1px solid var(--border);
+  .data-table tbody td {
+    padding: 13px 14px;
+    font-size: 13px;
+    color: var(--ink);
+    border-bottom: 1px solid var(--line);
+    letter-spacing: -0.01em;
+    vertical-align: middle;
   }
+  .data-table tbody td:first-child { padding-left: 22px; }
+  .data-table tbody td:last-child { padding-right: 22px; text-align: right; }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+  .data-table tbody tr { transition: background 0.12s; }
+  .data-table tbody tr:hover td { background: var(--bg-soft); }
 
-  .detail-table tr:last-child td { border-bottom: none; }
-  .detail-table tr:hover td { background: var(--bg); }
+  .td-time {
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--ink);
+  }
+  .td-time small {
+    color: var(--ink-3);
+    font-weight: 500;
+    margin-left: 2px;
+  }
+  .td-title { font-weight: 500; }
+  .td-muted { color: var(--ink-3); }
+  .td-num { white-space: nowrap; color: var(--ink-3); }
 
-  /* 지역 뱃지 */
-  .region-badge {
+  .group-row td {
+    background: var(--bg) !important;
+    padding-top: 16px;
+    padding-bottom: 8px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--line);
+  }
+  .group-row:hover td { background: var(--bg) !important; }
+  .region-chip {
     display: inline-flex;
     align-items: center;
-    padding: 2px 8px;
-    border-radius: 20px;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 980px;
     font-size: 11px;
     font-weight: 600;
+    letter-spacing: -0.01em;
   }
-
-  /* 상태 뱃지 */
-  .status-badge {
+  .region-chip::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .status-chip {
     display: inline-flex;
     align-items: center;
-    padding: 3px 8px;
-    border-radius: 20px;
+    padding: 2px 9px;
+    border-radius: 980px;
     font-size: 11px;
     font-weight: 600;
+    letter-spacing: -0.01em;
   }
+  .status-신청 { background: #fff5d9; color: #b25c00; }
+  .status-승인 { background: #e3f6e8; color: #1d7635; }
+  .status-거절 { background: #ffe5e3; color: #c52516; }
+  .status-취소 { background: var(--bg-tint); color: var(--ink-3); }
 
-  .status-신청 { background: #fef9c3; color: #854d0e; }
-  .status-승인 { background: #dcfce7; color: #166534; }
-  .status-거절 { background: #fee2e2; color: #991b1b; }
-  .status-취소 { background: #f3f4f6; color: #6b7280; }
+  /* ============ SIDEBAR ============ */
+  .side { display: flex; flex-direction: column; gap: 16px; }
 
-  /* 사이드바 */
-  .sidebar { display: flex; flex-direction: column; gap: 16px; }
-
-  .legend-item {
+  .legend, .today-list, .links { padding: 6px 12px 16px; }
+  .legend-row, .today-row, .link-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 0;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--r-sm);
+    font-size: 13.5px;
+    color: var(--ink);
+    transition: background 0.12s;
   }
-
+  .legend-row:hover, .link-row:hover { background: var(--bg-soft); }
   .legend-dot {
-    width: 10px;
-    height: 10px;
+    width: 10px; height: 10px;
     border-radius: 50%;
     flex-shrink: 0;
   }
-
-  .legend-label { font-size: 13px; color: var(--text); }
-  .legend-count { font-size: 12px; color: var(--text-sub); margin-left: auto; font-weight: 600; }
-
-  .today-summary { padding: 16px 20px; }
-
-  .today-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .today-item:last-child { border-bottom: none; }
-
-  .today-region {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  .legend-label { font-weight: 500; flex: 1; }
+  .legend-count, .today-count {
     font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
   }
 
-  .today-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+  .today-total {
+    background: linear-gradient(135deg, #0071e3 0%, #5e5ce6 100%);
+    color: white;
+    padding: 14px 16px;
+    border-radius: var(--r-md);
+    margin: 4px 12px 8px;
   }
-
-  .today-count {
-    font-size: 13px;
-    font-weight: 700;
+  .today-total-label {
+    font-size: 11.5px;
+    opacity: 0.85;
+    font-weight: 500;
+    letter-spacing: 0.01em;
   }
+  .today-total-value {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    margin-top: 4px;
+    line-height: 1;
+  }
+  .today-total-value span { font-size: 13px; font-weight: 500; opacity: 0.85; margin-left: 3px; }
+  .today-row { font-size: 13px; }
+  .today-row .today-count { color: var(--ink); }
 
-  .quick-links { padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
-
-  .quick-link {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    color: var(--text-sub);
+  .link-row {
     cursor: pointer;
-    padding: 6px 8px;
-    border-radius: 6px;
-    transition: all 0.15s;
-    text-decoration: none;
+    color: var(--ink);
   }
+  .link-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--bg-soft);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .link-icon svg { width: 16px; height: 16px; color: var(--ink-2); }
+  .link-text { font-size: 13.5px; font-weight: 500; flex: 1; }
+  .link-arrow { color: var(--ink-4); }
+  .link-arrow svg { width: 14px; height: 14px; }
 
-  .quick-link:hover { background: var(--bg); color: var(--text); }
-
-  /* 지역별 탭 */
-  .region-tabs {
+  /* ============ REGION TAB ============ */
+  .seg {
     display: flex;
     gap: 6px;
     padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
-
-  .region-tab {
-    padding: 5px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    border: 1.5px solid var(--border);
-    background: white;
-    color: var(--text-sub);
+  .seg::-webkit-scrollbar { display: none; }
+  .seg-btn {
+    padding: 7px 16px;
+    border-radius: 980px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-2);
+    background: var(--bg-soft);
     transition: all 0.15s;
-    font-family: inherit;
+    white-space: nowrap;
   }
+  .seg-btn:hover { background: var(--bg-tint); }
+  .seg-btn.active-판교 { background: var(--판교); color: white; }
+  .seg-btn.active-부천 { background: var(--부천); color: white; }
+  .seg-btn.active-시흥 { background: var(--시흥); color: white; }
+  .seg-btn.active-의정부 { background: var(--의정부); color: white; }
+  .seg-btn.active-하남 { background: var(--하남); color: white; }
 
-  .region-tab.active-판교 { background: var(--판교-bg); color: var(--판교); border-color: var(--판교); }
-  .region-tab.active-부천 { background: var(--부천-bg); color: var(--부천); border-color: var(--부천); }
-  .region-tab.active-시흥 { background: var(--시흥-bg); color: var(--시흥); border-color: var(--시흥); }
-  .region-tab.active-의정부 { background: var(--의정부-bg); color: var(--의정부); border-color: var(--의정부); }
-  .region-tab.active-하남 { background: var(--하남-bg); color: var(--하남); border-color: var(--하남); }
-
-  /* 로딩 */
+  /* ============ EMPTY/LOADING ============ */
+  .empty {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--ink-3);
+    font-size: 13.5px;
+  }
+  .empty-icon {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--bg-soft);
+    color: var(--ink-4);
+    display: inline-grid; place-items: center;
+    margin-bottom: 14px;
+  }
+  .empty-icon svg { width: 22px; height: 22px; }
   .loading {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 60px;
-    color: var(--text-sub);
-    font-size: 14px;
+    padding: 48px;
+    color: var(--ink-3);
+    font-size: 13px;
     gap: 10px;
   }
-
   .spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--border);
-    border-top-color: var(--primary);
+    width: 18px; height: 18px;
+    border: 2px solid var(--line-strong);
+    border-top-color: var(--accent);
     border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+    animation: spin 0.7s linear infinite;
   }
-
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* 탭 컨텐츠 */
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-
-  /* 에러 */
   .error-msg {
-    padding: 20px;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: 8px;
-    color: #dc2626;
+    margin: 16px;
+    padding: 18px 20px;
+    background: #ffe5e3;
+    border-radius: var(--r-md);
+    color: #c52516;
     font-size: 13px;
     text-align: center;
+    line-height: 1.5;
   }
 
-  /* 빈 상태 */
-  .empty {
-    padding: 40px;
-    text-align: center;
-    color: var(--text-sub);
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ============ GUIDE / NOTICE ============ */
+  .guide { padding: 8px 24px 28px; }
+  .guide h3 {
     font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 24px 0 12px;
+  }
+  .guide h3:first-child { margin-top: 8px; }
+  .guide ol, .guide ul {
+    list-style: none;
+    counter-reset: step;
+  }
+  .guide ol li, .guide ul li {
+    position: relative;
+    padding: 12px 0 12px 36px;
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.5;
+    border-bottom: 1px solid var(--line);
+  }
+  .guide ol li:last-child, .guide ul li:last-child { border-bottom: none; }
+  .guide ol li::before {
+    counter-increment: step;
+    content: counter(step);
+    position: absolute;
+    left: 0; top: 12px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--bg-soft);
+    color: var(--ink-2);
+    font-size: 11.5px;
+    font-weight: 600;
+    display: grid; place-items: center;
+  }
+  .guide ul li::before {
+    content: '';
+    position: absolute;
+    left: 8px; top: 21px;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--ink-4);
+  }
+  .guide p { font-size: 14px; color: var(--ink-2); line-height: 1.6; }
+  .guide strong { color: var(--ink); font-weight: 600; }
+
+  .notice-pane {
+    padding: 60px 32px;
+    text-align: center;
+  }
+  .notice-pane .empty-icon {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, #eaf3fd, #f4ebfa);
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .notice-pane .empty-icon svg { width: 26px; height: 26px; }
+  .notice-pane p {
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.6;
+    margin-bottom: 20px;
   }
 
+  /* ============ MOBILE ============ */
   @media (max-width: 900px) {
-    .main { padding: 12px; }
-    .header { padding: 0 12px; height: auto; min-height: 64px; flex-wrap: wrap; gap: 8px; padding-top: 10px; padding-bottom: 10px; }
-    .header-sub { display: none; }
-    .tabs { padding: 0 12px; overflow-x: auto; }
-    .tab { padding: 12px 10px; font-size: 12px; }
-    .summary-cards { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .content-grid { grid-template-columns: 1fr; }
-    .calendar-day { min-height: 56px; }
-    .day-badge { font-size: 9px; padding: 1px 3px; }
-    .sidebar { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .detail-table th, .detail-table td { padding: 6px 8px; font-size: 11px; }
-    .detail-table th:nth-child(5),
-    .detail-table td:nth-child(5),
-    .detail-table th:nth-child(6),
-    .detail-table td:nth-child(6) { display: none; }
-    .btn { padding: 7px 12px; font-size: 12px; }
-    .summary-card-value { font-size: 22px; }
-    .region-tabs { padding: 12px; gap: 6px; }
-    .region-tab { padding: 4px 10px; font-size: 11px; }
-    .calendar-weekday { font-size: 10px; }
-    .calendar-grid { padding: 10px; }
+    .header-inner { padding: 12px 16px; }
+    .brand-sub { display: none; }
+    .brand-title { font-size: 15px; }
+    .tabs-wrap { top: calc(var(--safe-top) + 61px); }
+    .tabs { padding: 0 10px; }
+    .tab { padding: 12px 10px; font-size: 13px; }
+    .tab::after { left: 10px; right: 10px; }
+
+    .main { padding: 18px 14px 60px; }
+
+    .stats {
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      overflow-x: auto;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(120px, 1fr);
+    }
+    .stats::-webkit-scrollbar { display: none; }
+    .stat { padding: 14px 14px; min-width: 130px; }
+    .stat-value { font-size: 24px; }
+    .stat-label { margin-bottom: 8px; font-size: 11.5px; }
+
+    .grid { grid-template-columns: 1fr; gap: 16px; }
+    .card-head { padding: 16px 18px 12px; }
+    .card-title { font-size: 14.5px; }
+
+    .cal-grid { padding: 0 8px 14px; }
+    .cal-day {
+      min-height: 60px;
+      padding: 5px 4px;
+      gap: 2px;
+    }
+    .day-num { font-size: 12px; }
+    .cal-day.is-today .day-num { width: 20px; height: 20px; font-size: 11px; }
+    /* Hide text badges, show colored dots */
+    .day-badges { display: none; }
+    .day-dots { display: flex; }
+    .cal-month { font-size: 14px; min-width: 84px; }
+    .cal-today-btn { display: none; }
+
+    .data-table thead th { padding: 9px 10px; font-size: 11px; }
+    .data-table thead th:first-child { padding-left: 14px; }
+    .data-table thead th:last-child { padding-right: 14px; }
+    .data-table tbody td { padding: 11px 10px; font-size: 12.5px; }
+    .data-table tbody td:first-child { padding-left: 14px; }
+    .data-table tbody td:last-child { padding-right: 14px; }
+    .data-table .col-hide-sm { display: none; }
+
+    .side { gap: 12px; }
+    .seg { padding: 14px 16px; }
+    .seg-btn { padding: 6px 14px; font-size: 12.5px; }
+
+    .guide { padding: 6px 16px 22px; }
+    .guide h3 { margin: 18px 0 8px; }
   }
 
   @media (max-width: 480px) {
-    .summary-cards { grid-template-columns: repeat(2, 1fr); }
-    .sidebar { grid-template-columns: 1fr; }
-    .header-right .btn-outline { display: none; }
-    .calendar-days { gap: 2px; }
-    .calendar-day { min-height: 48px; padding: 4px; }
+    .header-actions .btn-ghost-text { display: none; }
+    .brand-mark { width: 32px; height: 32px; border-radius: 9px; font-size: 14px; }
+    .brand-title { font-size: 14.5px; }
+
+    .stat { min-width: 116px; }
+  }
+
+  /* Focus ring (a11y) */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 </style>
 </head>
 <body>
 
-<!-- 헤더 -->
+<!-- ============ HEADER ============ -->
 <header class="header">
-  <div class="header-left">
-    <div class="header-logo">🏢</div>
-    <div>
-      <div class="header-title">G-AIX 회의실 예약 현황</div>
-      <div class="header-sub">5개 지역 · 총 9개 회의실</div>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div class="brand-text">
+        <div class="brand-title">G-AIX 회의실</div>
+        <div class="brand-sub">5개 지역 · 9개 회의실</div>
+      </div>
     </div>
-  </div>
-  <div class="header-right">
-    <button class="btn btn-outline" onclick="loadData()">🔄 새로고침</button>
-    <button class="btn btn-primary" onclick="window.open('https://www.notion.so/8d0ddc320ea647efb4c47badc5c21dc3?pvs=106')">예약하기</button>
+    <div class="header-actions">
+      <button class="btn btn-icon" onclick="loadData()" aria-label="새로고침" title="새로고침">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg>
+      </button>
+      <button class="btn btn-primary" onclick="window.open('https://www.notion.so/8d0ddc320ea647efb4c47badc5c21dc3?pvs=106')">
+        예약하기
+      </button>
+    </div>
   </div>
 </header>
 
-<!-- 탭 -->
-<nav class="tabs">
-  <div class="tab active" onclick="switchTab('all', this)">전체 현황</div>
-  <div class="tab" onclick="switchTab('region', this)">지역별 현황</div>
-  <div class="tab" onclick="switchTab('notice', this)">공지사항</div>
-  <div class="tab" onclick="switchTab('guide', this)">이용 안내</div>
+<!-- ============ TABS ============ -->
+<nav class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('all', this)">전체</button>
+    <button class="tab" onclick="switchTab('region', this)">지역별</button>
+    <button class="tab" onclick="switchTab('notice', this)">공지</button>
+    <button class="tab" onclick="switchTab('guide', this)">안내</button>
+  </div>
 </nav>
 
-<!-- 메인 -->
 <main class="main">
 
-  <!-- 요약 카드 -->
-  <div class="summary-cards">
-    <div class="summary-card">
-      <div class="summary-card-label">오늘 예약</div>
-      <div class="summary-card-value" id="stat-today">-<span>건</span></div>
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">오늘 예약</div>
+      <div class="stat-value" id="stat-today">—<span>건</span></div>
     </div>
-    <div class="summary-card">
-      <div class="summary-card-label">이번 주 예약</div>
-      <div class="summary-card-value" id="stat-week">-<span>건</span></div>
+    <div class="stat">
+      <div class="stat-label">이번 주</div>
+      <div class="stat-value" id="stat-week">—<span>건</span></div>
     </div>
-    <div class="summary-card alert">
-      <div class="summary-card-label">승인 대기</div>
-      <div class="summary-card-value" id="stat-pending">-<span>건</span></div>
+    <div class="stat is-alert">
+      <div class="stat-label">승인 대기</div>
+      <div class="stat-value" id="stat-pending">—<span>건</span></div>
     </div>
-    <div class="summary-card">
-      <div class="summary-card-label">이번 달 예약</div>
-      <div class="summary-card-value" id="stat-month">-<span>건</span></div>
+    <div class="stat">
+      <div class="stat-label">이번 달</div>
+      <div class="stat-value" id="stat-month">—<span>건</span></div>
     </div>
-    <div class="summary-card">
-      <div class="summary-card-label">전체 회의실</div>
-      <div class="summary-card-value">9<span>개</span></div>
+    <div class="stat">
+      <div class="stat-label">전체 회의실</div>
+      <div class="stat-value">9<span>개</span></div>
     </div>
   </div>
 
-  <!-- 전체 현황 탭 -->
-  <div id="tab-all" class="tab-content active">
-    <div class="content-grid">
-      <!-- 캘린더 -->
+  <!-- ============ 전체 ============ -->
+  <section id="tab-all" class="tab-pane active">
+    <div class="grid">
       <div>
-        <div class="card" style="margin-bottom: 16px;">
-          <div class="card-header">
+        <!-- Calendar -->
+        <div class="card">
+          <div class="card-head">
             <div>
-              <div class="card-title">전체 월간 예약 현황</div>
-              <div class="card-sub">지역별 색상으로 예약 건수 표시</div>
+              <div class="card-title">월간 예약 현황</div>
+              <div class="card-sub">지역별 색상으로 표시</div>
             </div>
-            <div class="calendar-nav">
-              <button class="calendar-nav-btn" onclick="changeMonth(-1)">‹</button>
-              <div class="calendar-month" id="calendar-month-label">2026년 5월</div>
-              <button class="calendar-nav-btn" onclick="changeMonth(1)">›</button>
+            <div class="cal-nav">
+              <button class="cal-today-btn" onclick="goToday()">오늘</button>
+              <button class="cal-nav-btn" onclick="changeMonth(-1)" aria-label="이전 달">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <div class="cal-month" id="cal-month-label">2026년 5월</div>
+              <button class="cal-nav-btn" onclick="changeMonth(1)" aria-label="다음 달">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
             </div>
           </div>
-          <div class="calendar-grid">
-            <div class="calendar-weekdays">
-              <div class="calendar-weekday">일</div>
-              <div class="calendar-weekday">월</div>
-              <div class="calendar-weekday">화</div>
-              <div class="calendar-weekday">수</div>
-              <div class="calendar-weekday">목</div>
-              <div class="calendar-weekday">금</div>
-              <div class="calendar-weekday">토</div>
+          <div class="cal-grid">
+            <div class="cal-weekdays">
+              <div class="cal-weekday">일</div>
+              <div class="cal-weekday">월</div>
+              <div class="cal-weekday">화</div>
+              <div class="cal-weekday">수</div>
+              <div class="cal-weekday">목</div>
+              <div class="cal-weekday">금</div>
+              <div class="cal-weekday">토</div>
             </div>
-            <div class="calendar-days" id="calendar-days">
-              <div class="loading"><div class="spinner"></div> 데이터 로딩 중...</div>
+            <div class="cal-days" id="cal-days">
+              <div class="loading" style="grid-column: 1/-1;"><div class="spinner"></div> 불러오는 중…</div>
             </div>
           </div>
         </div>
 
-        <!-- 선택 날짜 상세 -->
+        <!-- Detail -->
         <div class="card">
-          <div class="card-header">
+          <div class="card-head">
             <div>
               <div class="card-title" id="detail-title">날짜를 선택하세요</div>
-              <div class="card-sub">해당 날짜의 예약 상세 내역</div>
+              <div class="card-sub" id="detail-sub">해당 날짜의 예약 상세</div>
             </div>
           </div>
           <div id="detail-content">
-            <div class="empty">캘린더에서 날짜를 클릭하면 상세 예약 내역이 표시됩니다.</div>
+            <div class="empty">
+              <div class="empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div>캘린더에서 날짜를 선택하면<br>예약 상세가 나타납니다</div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 사이드바 -->
-      <div class="sidebar">
-        <!-- 지역 범례 -->
+      <!-- Sidebar -->
+      <aside class="side">
+        <!-- Today summary -->
         <div class="card">
-          <div class="card-header">
-            <div class="card-title">지역 색상 범례</div>
+          <div class="card-head">
+            <div class="card-title" id="today-label">오늘</div>
           </div>
-          <div style="padding: 12px 20px;">
-            <div class="legend-item">
-              <div class="legend-dot" style="background: var(--판교);"></div>
+          <div class="today-list" id="today-summary">
+            <div class="loading" style="padding: 20px;"><div class="spinner"></div></div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">지역별 (이번 달)</div>
+            </div>
+          </div>
+          <div class="legend">
+            <div class="legend-row">
+              <div class="legend-dot" style="background: var(--판교)"></div>
               <span class="legend-label">판교</span>
-              <span class="legend-count" id="legend-판교">-건</span>
+              <span class="legend-count" id="legend-판교">—</span>
             </div>
-            <div class="legend-item">
-              <div class="legend-dot" style="background: var(--부천);"></div>
+            <div class="legend-row">
+              <div class="legend-dot" style="background: var(--부천)"></div>
               <span class="legend-label">부천</span>
-              <span class="legend-count" id="legend-부천">-건</span>
+              <span class="legend-count" id="legend-부천">—</span>
             </div>
-            <div class="legend-item">
-              <div class="legend-dot" style="background: var(--시흥);"></div>
+            <div class="legend-row">
+              <div class="legend-dot" style="background: var(--시흥)"></div>
               <span class="legend-label">시흥</span>
-              <span class="legend-count" id="legend-시흥">-건</span>
+              <span class="legend-count" id="legend-시흥">—</span>
             </div>
-            <div class="legend-item">
-              <div class="legend-dot" style="background: var(--의정부);"></div>
+            <div class="legend-row">
+              <div class="legend-dot" style="background: var(--의정부)"></div>
               <span class="legend-label">의정부</span>
-              <span class="legend-count" id="legend-의정부">-건</span>
+              <span class="legend-count" id="legend-의정부">—</span>
             </div>
-            <div class="legend-item">
-              <div class="legend-dot" style="background: var(--하남);"></div>
+            <div class="legend-row">
+              <div class="legend-dot" style="background: var(--하남)"></div>
               <span class="legend-label">하남</span>
-              <span class="legend-count" id="legend-하남">-건</span>
+              <span class="legend-count" id="legend-하남">—</span>
             </div>
           </div>
         </div>
 
-        <!-- 오늘 요약 -->
+        <!-- Links -->
         <div class="card">
-          <div class="card-header">
-            <div class="card-title" id="today-label">오늘 요약</div>
-          </div>
-          <div class="today-summary" id="today-summary">
-            <div class="loading"><div class="spinner"></div></div>
-          </div>
-        </div>
-
-        <!-- 바로가기 -->
-        <div class="card">
-          <div class="card-header">
+          <div class="card-head">
             <div class="card-title">바로가기</div>
           </div>
-          <div class="quick-links">
-            <a class="quick-link" href="https://www.notion.so/8d0ddc320ea647efb4c47badc5c21dc3?pvs=106" target="_blank">
-              📝 회의실 예약하기
+          <div class="links">
+            <a class="link-row" href="https://www.notion.so/8d0ddc320ea647efb4c47badc5c21dc3?pvs=106" target="_blank">
+              <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+              <span class="link-text">회의실 예약하기</span>
+              <span class="link-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </a>
-            <a class="quick-link" href="https://www.notion.so/041f6107301f4c0cbd6d9c52963880a7" target="_blank">
-              📋 예약 신청 현황 (관리자)
+            <a class="link-row" href="https://www.notion.so/041f6107301f4c0cbd6d9c52963880a7" target="_blank">
+              <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></div>
+              <span class="link-text">신청 현황 (관리자)</span>
+              <span class="link-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </a>
-            <a class="quick-link" href="https://www.notion.so/35c81b6b948781cb8d17c1a80c5f9a2c" target="_blank">
-              🏛️ G-AIX 포털
+            <a class="link-row" href="https://www.notion.so/35c81b6b948781cb8d17c1a80c5f9a2c" target="_blank">
+              <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+              <span class="link-text">G-AIX 포털</span>
+              <span class="link-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </a>
           </div>
         </div>
-      </div>
+      </aside>
     </div>
-  </div>
+  </section>
 
-  <!-- 지역별 현황 탭 -->
-  <div id="tab-region" class="tab-content">
+  <!-- ============ 지역별 ============ -->
+  <section id="tab-region" class="tab-pane">
     <div class="card">
-      <div class="region-tabs">
-        <button class="region-tab active-판교" onclick="selectRegion('판교', this)" id="rtab-판교">판교</button>
-        <button class="region-tab" onclick="selectRegion('부천', this)" id="rtab-부천">부천</button>
-        <button class="region-tab" onclick="selectRegion('시흥', this)" id="rtab-시흥">시흥</button>
-        <button class="region-tab" onclick="selectRegion('의정부', this)" id="rtab-의정부">의정부</button>
-        <button class="region-tab" onclick="selectRegion('하남', this)" id="rtab-하남">하남</button>
+      <div class="seg">
+        <button class="seg-btn active-판교" onclick="selectRegion('판교', this)">판교</button>
+        <button class="seg-btn" onclick="selectRegion('부천', this)">부천</button>
+        <button class="seg-btn" onclick="selectRegion('시흥', this)">시흥</button>
+        <button class="seg-btn" onclick="selectRegion('의정부', this)">의정부</button>
+        <button class="seg-btn" onclick="selectRegion('하남', this)">하남</button>
       </div>
       <div id="region-content">
-        <div class="loading"><div class="spinner"></div> 로딩 중...</div>
+        <div class="loading"><div class="spinner"></div> 불러오는 중…</div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- 공지사항 탭 -->
-  <div id="tab-notice" class="tab-content">
+  <!-- ============ 공지 ============ -->
+  <section id="tab-notice" class="tab-pane">
     <div class="card">
-      <div class="card-header">
-        <div class="card-title">공지사항</div>
-      </div>
-      <div style="padding: 40px; text-align: center; color: var(--text-sub); font-size: 13px;">
-        Notion 포털에서 공지사항을 확인해주세요.<br><br>
-        <a href="https://www.notion.so/35c81b6b948781cb8d17c1a80c5f9a2c" target="_blank" class="btn btn-primary" style="display: inline-block; margin-top: 8px; text-decoration: none;">공지사항 보기 →</a>
+      <div class="notice-pane">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+        </div>
+        <p>공지사항은 Notion 포털에서<br>확인하실 수 있습니다.</p>
+        <a class="btn btn-primary" href="https://www.notion.so/35c81b6b948781cb8d17c1a80c5f9a2c" target="_blank">공지사항 보기</a>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- 이용 안내 탭 -->
-  <div id="tab-guide" class="tab-content">
+  <!-- ============ 안내 ============ -->
+  <section id="tab-guide" class="tab-pane">
     <div class="card">
-      <div class="card-header">
+      <div class="card-head">
         <div class="card-title">이용 안내</div>
       </div>
-      <div style="padding: 24px;">
-        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">예약 방법</h3>
-        <ol style="font-size: 13px; color: var(--text-sub); line-height: 2; padding-left: 20px;">
+      <div class="guide">
+        <h3>예약 방법</h3>
+        <ol>
           <li>상단 <strong>예약하기</strong> 버튼 클릭</li>
           <li>지역 및 회의실 선택</li>
           <li>예약 날짜, 시작/종료 시간 선택</li>
           <li>신청자 정보 입력 후 제출</li>
           <li>자동 처리 후 이메일로 결과 안내 (최대 5분)</li>
         </ol>
-        <hr style="border: none; border-top: 1px solid var(--border); margin: 20px 0;">
-        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">이용 수칙</h3>
-        <ul style="font-size: 13px; color: var(--text-sub); line-height: 2; padding-left: 20px;">
+
+        <h3>이용 수칙</h3>
+        <ul>
           <li>예약 후 10분 이상 미입실 시 예약이 취소될 수 있습니다.</li>
           <li>사용 후 책상 및 장비를 원상태로 정리해주세요.</li>
           <li>예약 취소는 사용 1시간 전까지 운영팀에 연락 바랍니다.</li>
           <li>장비 이상 발생 시 즉시 운영팀으로 연락해주세요.</li>
         </ul>
-        <hr style="border: none; border-top: 1px solid var(--border); margin: 20px 0;">
-        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">운영 시간</h3>
-        <p style="font-size: 13px; color: var(--text-sub); line-height: 2;">평일 09:00 ~ 18:00 (점심시간 12:00~13:00 제외)</p>
-        <hr style="border: none; border-top: 1px solid var(--border); margin: 20px 0;">
-        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">문의</h3>
-        <p style="font-size: 13px; color: var(--text-sub);">📧 gbsaaicluster@gmail.com</p>
+
+        <h3>운영 시간</h3>
+        <p>평일 09:00 – 18:00 <span style="color:var(--ink-3)">(점심시간 12:00–13:00 제외)</span></p>
+
+        <h3>문의</h3>
+        <p>gbsaaicluster@gmail.com</p>
       </div>
     </div>
-  </div>
+  </section>
 
 </main>
 
 <script>
-// ================================================================
-// 설정값 — 여기만 수정하면 됩니다
-// Apps Script 웹앱 배포 URL로 교체하세요
-// ================================================================
+// =========================================================
+// 설정
+// =========================================================
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxV1bO0g4SrGYGCfQBXVIrxNbwxck92Dzmtr7aTof1qwSlu4Qg6cahxK8fagih9WKYaxg/exec';
 
-// ================================================================
+// =========================================================
 // 상태
-// ================================================================
+// =========================================================
 let allData = [];
-
-// 회의실 → 지역 매핑 (데이터에 지역 없을 때 자동 추론)
 const ROOM_REGION_MAP = {
   '[판교] 미팅룸 1': '판교', '[판교] 미팅룸 2': '판교',
   '[판교] 미팅룸 3': '판교', '[판교] 미팅룸 4': '판교',
@@ -817,40 +1062,35 @@ let selectedRegion = '판교';
 
 const REGIONS = ['판교', '부천', '시흥', '의정부', '하남'];
 const REGION_COLORS = {
-  '판교': '#2563eb', '부천': '#16a34a',
-  '시흥': '#ea580c', '의정부': '#9333ea', '하남': '#db2777'
+  '판교': '#0071e3', '부천': '#34a853',
+  '시흥': '#ff9500', '의정부': '#af52de', '하남': '#ff2d55'
 };
 
-// ================================================================
+// =========================================================
 // 데이터 로드
-// ================================================================
+// =========================================================
 async function loadData() {
   try {
     const json = await fetchJSONP(APPS_SCRIPT_URL);
     if (!json.success) throw new Error(json.error);
-    allData = json.data.map(function(d) {
-      // 지역 없으면 회의실명으로 자동 추론
-      if (!d.region && d.room && ROOM_REGION_MAP[d.room]) {
-        d.region = ROOM_REGION_MAP[d.room];
-      }
+    allData = json.data.map(d => {
+      if (!d.region && d.room && ROOM_REGION_MAP[d.room]) d.region = ROOM_REGION_MAP[d.room];
       return d;
     });
-
     updateStats();
     renderCalendar();
     renderTodaySummary();
     renderLegend();
     renderRegion(selectedRegion);
-
   } catch (e) {
-    document.getElementById('calendar-days').innerHTML =
-      `<div class="error-msg" style="grid-column: 1/-1;">데이터 로드 실패: ${e.message}<br><small>Notion API 토큰을 확인해주세요.</small></div>`;
+    document.getElementById('cal-days').innerHTML =
+      `<div class="error-msg" style="grid-column:1/-1;">데이터를 불러오지 못했습니다.<br><small style="opacity:0.7">${e.message}</small></div>`;
   }
 }
 
-// ================================================================
-// 통계 업데이트
-// ================================================================
+// =========================================================
+// 통계
+// =========================================================
 function updateStats() {
   const today = toDateStr(new Date());
   const now = new Date();
@@ -864,60 +1104,65 @@ function updateStats() {
   const monthCount = approved.filter(d => d.date.startsWith(monthStr)).length;
   const pendingCount = allData.filter(d => d.status === '신청' || !d.status).length;
 
-  document.getElementById('stat-today').innerHTML = `${todayCount}<span>건</span>`;
-  document.getElementById('stat-week').innerHTML = `${weekCount}<span>건</span>`;
-  document.getElementById('stat-month').innerHTML = `${monthCount}<span>건</span>`;
-  document.getElementById('stat-pending').innerHTML = `${pendingCount}<span>건</span>`;
+  setStatValue('stat-today', todayCount);
+  setStatValue('stat-week', weekCount);
+  setStatValue('stat-month', monthCount);
+  setStatValue('stat-pending', pendingCount);
+}
+function setStatValue(id, n) {
+  document.getElementById(id).innerHTML = `${n}<span>건</span>`;
 }
 
-// ================================================================
-// 범례 업데이트
-// ================================================================
+// =========================================================
+// 범례
+// =========================================================
 function renderLegend() {
   const monthStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}`;
   const approved = allData.filter(d => d.status === '승인' && d.date.startsWith(monthStr));
   REGIONS.forEach(r => {
     const el = document.getElementById(`legend-${r}`);
-    if (el) el.textContent = approved.filter(d => d.region === r).length + '건';
+    if (el) el.textContent = approved.filter(d => d.region === r).length;
   });
 }
 
-// ================================================================
+// =========================================================
 // 오늘 요약
-// ================================================================
+// =========================================================
 function renderTodaySummary() {
   const today = toDateStr(new Date());
   const todayData = allData.filter(d => d.status === '승인' && d.date === today);
   const now = new Date();
+  const days = ['일','월','화','수','목','금','토'];
   document.getElementById('today-label').textContent =
-    `오늘 요약 (${now.getMonth()+1}/${now.getDate()})`;
+    `오늘 · ${now.getMonth()+1}월 ${now.getDate()}일 (${days[now.getDay()]})`;
 
-  const totalEl = `<div class="today-item"><div class="today-region"><span>전체 예약</span></div><span class="today-count">${todayData.length}건</span></div>`;
+  const totalEl = `
+    <div class="today-total">
+      <div class="today-total-label">전체 예약</div>
+      <div class="today-total-value">${todayData.length}<span>건</span></div>
+    </div>`;
+
   const regionItems = REGIONS.map(r => {
     const cnt = todayData.filter(d => d.region === r).length;
-    return `<div class="today-item">
-      <div class="today-region">
-        <div class="today-dot" style="background: ${REGION_COLORS[r]};"></div>
-        <span>${r}</span>
-      </div>
-      <span class="today-count" style="color: ${REGION_COLORS[r]};">${cnt}건</span>
+    return `<div class="today-row">
+      <div class="legend-dot" style="background:${REGION_COLORS[r]}"></div>
+      <span class="legend-label">${r}</span>
+      <span class="today-count">${cnt}</span>
     </div>`;
   }).join('');
 
   document.getElementById('today-summary').innerHTML = totalEl + regionItems;
 }
 
-// ================================================================
-// 캘린더 렌더링
-// ================================================================
+// =========================================================
+// 캘린더
+// =========================================================
 function renderCalendar() {
-  const label = `${currentYear}년 ${currentMonth+1}월`;
-  document.getElementById('calendar-month-label').textContent = label;
+  document.getElementById('cal-month-label').textContent = `${currentYear}년 ${currentMonth+1}월`;
 
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
   const lastDate = new Date(currentYear, currentMonth+1, 0).getDate();
   const today = toDateStr(new Date());
-
   const approved = allData.filter(d => d.status === '승인');
 
   let html = '';
@@ -926,50 +1171,61 @@ function renderCalendar() {
 
   for (let i = 0; i < totalCells; i++) {
     if (i < firstDay || dayCount > lastDate) {
-      // 다른 달 날짜
+      let d;
       if (i < firstDay) {
         const prevLast = new Date(currentYear, currentMonth, 0).getDate();
-        const d = prevLast - (firstDay - 1 - i);
-        html += `<div class="calendar-day other-month"><div class="day-number">${d}</div></div>`;
+        d = prevLast - (firstDay - 1 - i);
       } else {
-        const d = i - firstDay - lastDate + 1;
-        html += `<div class="calendar-day other-month"><div class="day-number">${d}</div></div>`;
+        d = i - firstDay - lastDate + 1;
       }
+      html += `<div class="cal-day is-other"><div class="day-num">${d}</div></div>`;
     } else {
       const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(dayCount).padStart(2,'0')}`;
       const isToday = dateStr === today;
       const isSelected = dateStr === selectedDate;
 
       const dayData = approved.filter(d => d.date === dateStr);
-
-      // 지역별 집계
       const regionCounts = {};
       dayData.forEach(d => {
         if (d.region) regionCounts[d.region] = (regionCounts[d.region] || 0) + 1;
       });
+      const activeRegions = REGIONS.filter(r => regionCounts[r] > 0);
 
-      const badges = REGIONS
-        .filter(r => regionCounts[r] > 0)
-        .map(r => `<div class="day-badge badge-${r}">${r} ${regionCounts[r]}건</div>`)
+      const badges = activeRegions
+        .map(r => `<div class="day-badge badge-${r}">${r} ${regionCounts[r]}</div>`)
         .join('');
 
-      html += `<div class="calendar-day${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}"
-        onclick="selectDate('${dateStr}', ${dayCount})">
-        <div class="day-number">${isToday ? `<span>${dayCount}</span>` : dayCount}</div>
-        <div class="day-badges">${badges}</div>
-      </div>`;
+      const dots = activeRegions
+        .map(r => `<div class="day-dot" style="background:${REGION_COLORS[r]}"></div>`)
+        .join('');
 
+      html += `<div class="cal-day${isToday ? ' is-today' : ''}${isSelected ? ' is-selected' : ''}"
+        onclick="selectDate('${dateStr}')">
+        <div class="day-num">${isToday ? `<span>${dayCount}</span>` : dayCount}</div>
+        <div class="day-badges">${badges}</div>
+        <div class="day-dots">${dots}</div>
+      </div>`;
       dayCount++;
     }
   }
 
-  document.getElementById('calendar-days').innerHTML = html;
+  document.getElementById('cal-days').innerHTML = html;
 }
 
-// ================================================================
-// 날짜 선택
-// ================================================================
-function selectDate(dateStr, day) {
+function goToday() {
+  const now = new Date();
+  currentYear = now.getFullYear();
+  currentMonth = now.getMonth();
+  selectedDate = toDateStr(now);
+  renderCalendar();
+  renderLegend();
+  selectDate(selectedDate);
+}
+
+// =========================================================
+// 날짜 선택 → 상세
+// =========================================================
+function selectDate(dateStr) {
   selectedDate = dateStr;
   renderCalendar();
 
@@ -977,51 +1233,63 @@ function selectDate(dateStr, day) {
   const days = ['일','월','화','수','목','금','토'];
   const dow = days[new Date(dateStr).getDay()];
   document.getElementById('detail-title').textContent =
-    `${parts[0]}년 ${parseInt(parts[1])}월 ${parseInt(parts[2])}일 (${dow}) 예약 현황`;
+    `${parseInt(parts[1])}월 ${parseInt(parts[2])}일 (${dow})`;
 
   const dayData = allData.filter(d => d.date === dateStr && d.status === '승인')
     .sort((a,b) => (a.startTime||'').localeCompare(b.startTime||''));
 
+  document.getElementById('detail-sub').textContent =
+    dayData.length === 0 ? '예약이 없습니다' : `${dayData.length}건의 예약`;
+
   if (dayData.length === 0) {
-    document.getElementById('detail-content').innerHTML =
-      '<div class="empty">이 날짜에 승인된 예약이 없습니다.</div>';
+    document.getElementById('detail-content').innerHTML = `
+      <div class="empty">
+        <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div>이 날짜에는 승인된 예약이 없습니다</div>
+      </div>`;
     return;
   }
 
   const rows = dayData.map(d => `
     <tr>
-      <td>${d.startTime}~${d.endTime}</td>
-      <td><span class="region-badge" style="background: var(--${d.region}-bg); color: var(--${d.region});">${d.region}</span></td>
-      <td>${d.room}</td>
-      <td>${d.title}</td>
-      <td>${d.applicant}</td>
-      <td>${d.company}</td>
-      <td>${d.headcount ? d.headcount+'명' : '-'}</td>
-      <td><span class="status-badge status-${d.status}">${d.status}</span></td>
+      <td class="td-time">${esc(d.startTime||'')}<small>~${esc(d.endTime||'')}</small></td>
+      <td><span class="region-chip" style="background:var(--${d.region}-bg);color:var(--${d.region})">${esc(d.region||'')}</span></td>
+      <td class="td-muted">${esc(d.room||'')}</td>
+      <td class="td-title">${esc(d.title||'(제목 없음)')}</td>
+      <td class="col-hide-sm td-muted">${esc(d.applicant||'-')}</td>
+      <td class="col-hide-sm td-muted">${esc(d.company||'-')}</td>
+      <td class="col-hide-sm td-num">${d.headcount ? d.headcount+'명' : '-'}</td>
+      <td><span class="status-chip status-${esc(d.status||'')}">${esc(d.status||'')}</span></td>
     </tr>
   `).join('');
 
   document.getElementById('detail-content').innerHTML = `
-    <table class="detail-table">
-      <thead>
-        <tr>
-          <th>시간</th><th>지역</th><th>회의실</th><th>예약명</th>
-          <th>신청자</th><th>소속</th><th>인원</th><th>상태</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>시간</th>
+            <th>지역</th>
+            <th>회의실</th>
+            <th>예약명</th>
+            <th class="col-hide-sm">신청자</th>
+            <th class="col-hide-sm">소속</th>
+            <th class="col-hide-sm">인원</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
 }
 
-// ================================================================
-// 지역별 현황
-// ================================================================
+// =========================================================
+// 지역별
+// =========================================================
 function selectRegion(region, btn) {
   selectedRegion = region;
-  document.querySelectorAll('.region-tab').forEach(t => {
-    t.className = 'region-tab';
-  });
-  btn.className = `region-tab active-${region}`;
+  document.querySelectorAll('.seg-btn').forEach(t => t.className = 'seg-btn');
+  btn.className = `seg-btn active-${region}`;
   renderRegion(region);
 }
 
@@ -1030,50 +1298,76 @@ function renderRegion(region) {
     .sort((a,b) => (a.date||'').localeCompare(b.date||'') || (a.startTime||'').localeCompare(b.startTime||''));
 
   if (regionData.length === 0) {
-    document.getElementById('region-content').innerHTML =
-      '<div class="empty">해당 지역의 승인된 예약이 없습니다.</div>';
+    document.getElementById('region-content').innerHTML = `
+      <div class="empty">
+        <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div>${esc(region)}에 승인된 예약이 없습니다</div>
+      </div>`;
     return;
   }
 
-  const rows = regionData.map(d => `
-    <tr>
-      <td>${formatDateShort(d.date)}</td>
-      <td>${d.startTime}~${d.endTime}</td>
-      <td>${d.room}</td>
-      <td>${d.title}</td>
-      <td>${d.applicant}</td>
-      <td>${d.company}</td>
-      <td>${d.headcount ? d.headcount+'명' : '-'}</td>
-      <td><span class="status-badge status-${d.status}">${d.status}</span></td>
-    </tr>
-  `).join('');
+  // Group by date
+  const grouped = {};
+  regionData.forEach(d => {
+    if (!grouped[d.date]) grouped[d.date] = [];
+    grouped[d.date].push(d);
+  });
+
+  const days = ['일','월','화','수','목','금','토'];
+  let body = '';
+  Object.keys(grouped).sort().forEach(date => {
+    const dow = days[new Date(date).getDay()];
+    const [y,m,dd] = date.split('-');
+    const dateLabel = `${parseInt(m)}월 ${parseInt(dd)}일 (${dow})`;
+    body += `<tr class="group-row"><td colspan="8">${dateLabel}</td></tr>`;
+    grouped[date].forEach(d => {
+      body += `
+        <tr>
+          <td class="td-time">${esc(d.startTime||'')}<small>~${esc(d.endTime||'')}</small></td>
+          <td class="td-muted">${esc(d.room||'')}</td>
+          <td class="td-title">${esc(d.title||'(제목 없음)')}</td>
+          <td class="col-hide-sm td-muted">${esc(d.applicant||'-')}</td>
+          <td class="col-hide-sm td-muted">${esc(d.company||'-')}</td>
+          <td class="col-hide-sm td-num">${d.headcount ? d.headcount+'명' : '-'}</td>
+          <td><span class="status-chip status-${esc(d.status||'')}">${esc(d.status||'')}</span></td>
+        </tr>`;
+    });
+  });
 
   document.getElementById('region-content').innerHTML = `
-    <table class="detail-table">
-      <thead>
-        <tr>
-          <th>날짜</th><th>시간</th><th>회의실</th><th>예약명</th>
-          <th>신청자</th><th>소속</th><th>인원</th><th>상태</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>시간</th>
+            <th>회의실</th>
+            <th>예약명</th>
+            <th class="col-hide-sm">신청자</th>
+            <th class="col-hide-sm">소속</th>
+            <th class="col-hide-sm">인원</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody>${body}</tbody>
+      </table>
+    </div>`;
 }
 
-// ================================================================
-// 탭 전환
-// ================================================================
+// =========================================================
+// 탭
+// =========================================================
 function switchTab(tab, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   document.getElementById(`tab-${tab}`).classList.add('active');
   if (tab === 'region') renderRegion(selectedRegion);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ================================================================
+// =========================================================
 // 월 이동
-// ================================================================
+// =========================================================
 function changeMonth(dir) {
   currentMonth += dir;
   if (currentMonth > 11) { currentMonth = 0; currentYear++; }
@@ -1082,37 +1376,32 @@ function changeMonth(dir) {
   renderLegend();
 }
 
-// ================================================================
+// =========================================================
 // 유틸
-// ================================================================
+// =========================================================
 function toDateStr(date) {
   return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 }
-
-function formatDateShort(dateStr) {
-  if (!dateStr) return '';
-  const [y,m,d] = dateStr.split('-');
-  const days = ['일','월','화','수','목','금','토'];
-  const dow = days[new Date(dateStr).getDay()];
-  return `${parseInt(m)}/${parseInt(d)} (${dow})`;
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
-// JSONP 방식으로 Apps Script 호출 (CORS 우회)
+// JSONP
 function fetchJSONP(url) {
-  return new Promise(function(resolve, reject) {
-    var callbackName = 'gaix_cb_' + Date.now();
+  return new Promise((resolve, reject) => {
+    const callbackName = 'gaix_cb_' + Date.now();
     window[callbackName] = function(data) {
       delete window[callbackName];
-      var el = document.getElementById('jsonp_script');
+      const el = document.getElementById('jsonp_script');
       if (el) el.parentNode.removeChild(el);
       resolve(data);
     };
-    var script = document.createElement('script');
+    const script = document.createElement('script');
     script.id = 'jsonp_script';
     script.src = url + '?callback=' + callbackName;
-    script.onerror = function() {
+    script.onerror = () => {
       delete window[callbackName];
-      reject(new Error('JSONP 요청 실패 — Apps Script 재배포 확인 필요'));
+      reject(new Error('네트워크 오류'));
     };
     document.head.appendChild(script);
   });
